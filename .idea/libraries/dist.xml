@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="dist">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-article.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-portfolio.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-text-only.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-blog.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-dashboard.zip!/" />
+      <root url="jar://$PROJECT_DIR$/.cache/yarn/v6/npm-material-design-lite-1.3.0-d004ce3fee99a1eeb74a78b8a325134a5f1171d3-integrity/node_modules/material-design-lite/dist/mdl-template-android-dot-com.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,48 @@
+{
+  "name": "itaca-v2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mendable/search": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/material": "latest",
+    "@mui/x-data-grid": "latest",
+    "@pinecone-database/pinecone": "^1.1.2",
+    "chart.js": "^4.4.0",
+    "express-sse": "^0.5.3",
+    "firebase": "latest",
+    "firebaseui": "latest",
+    "langchain": "^0.0.198",
+    "mui-file-input": "latest",
+    "next": "latest",
+    "next-auth": "^4.24.5",
+    "pdf-parse": "latest",
+    "pg": "^8.11.3",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-firebase-hooks": "latest",
+    "react-loading": "^2.0.3",
+    "react-resizable": "^3.0.5",
+    "reflect-metadata": "^0.1.13",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.6",
+    "tailwindcss": "^3.3.5",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.1",
+    "@types/react": "18.2.39",
+    "autoprefixer": "^10.4.16",
+    "eslint": "8.46.0",
+    "eslint-config-next": "latest",
+    "typescript": "5.3.3"
+  }
+}

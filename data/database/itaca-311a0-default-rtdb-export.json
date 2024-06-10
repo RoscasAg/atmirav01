@@ -1,0 +1,47 @@
+{
+  "admins": {
+    "H7CJNAn8mDTRaxkeLAizP4Mieht2": {
+      "name": "Daniel Perales",
+      "email": "daniel.perales@itaca.tech",
+      "nif": "Z00000300"
+    },
+    "w8GWxXaA4yfJaIXEnHeot0zI0W43": {
+      "name": "Daniel Perales",
+      "email": "dperales@icloud.com",
+      "nif": "Z00000300"
+    },
+    "YzcnnnpNWsexqOOPVGaOZPuiY8i1": {
+      "name": "Daniel Perales",
+      "email": "dperales@icloud.com",
+      "nif": "Z00000300"
+    }
+  },
+  "documents": {
+    "Z00000300": {
+      "claims": {
+        "10031489": {
+          "data": "23/08/2023",
+          "description": "my first claim description",
+          "photo": "https://firebasestorage.googleapis.com/v0/b/itaca-311a0.appspot.com/o/car_damage%2Ffoto_26_processed.jpg?alt=media&token=165cde70-5238-4b1b-89e7-63a0c2508ed4"
+        },
+        "10031772": {
+          "data": "24/08/2023",
+          "description": "my second claim description",
+          "photo": "https://firebasestorage.googleapis.com/v0/b/itaca-311a0.appspot.com/o/car_damage%2Ffoto_50_processed.jpg?alt=media&token=6822f60f-93ec-4486-883a-2268c1670db1"
+        }
+      },
+      "policies": {
+        "90034827": {
+          "data": "01/01/2020",
+          "description": "Policy document",
+          "pdf": "https://firebasestorage.googleapis.com/v0/b/itaca-311a0.appspot.com/o/documents%2Fpolissa%2090-034827_12.pdf?alt=media&token=33983dc5-00c4-469e-9ac9-26b9e1212851"
+        },
+        "90034828": {
+          "data": "01/01/1990",
+          "description": "Policy General Conditions",
+          "pdf": "https://firebasestorage.googleapis.com/v0/b/itaca-311a0.appspot.com/o/documents%2FMULTISEGUR%20AUTO_V2.pdf?alt=media&token=64b9ac72-b6cd-4dba-a723-b2af9a9cff7b"
+        }
+      }
+    }
+  }
+}
