@@ -1,4 +1,3 @@
-//Example usinf Firebase Realtime Database
 import * as React from "react";
 import * as mui from "@mui/material";
 import { useState, useEffect, useContext } from "react";
@@ -53,6 +52,7 @@ function MyDocuments({}) {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const notificationCtx = useContext(AppNotificationContext);
   const {
     nif,
@@ -77,6 +77,17 @@ function MyDocuments({}) {
   };
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const uploadFileToFirebaseAndPinecone = () => {
+    if (!selectedFile) return;
+
+    // Aquí iría tu lógica para subir el archivo a Firebase y Pinecone
+    console.log("Uploading file to Firebase and Pinecone:", selectedFile);
   };
 
   useEffect(() => {
@@ -108,6 +119,19 @@ function MyDocuments({}) {
       <GridContainer container spacing={3}>
         <mui.Grid xs={12} sm={12} md={12} lg={12}>
           <PDFLoaderv2 />
+        </mui.Grid>
+        <mui.Grid xs={12} sm={12} md={12} lg={12}>
+          <input
+            type="file"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            id="file-input"
+          />
+          <label htmlFor="file-input">
+            <mui.Button variant="contained" component="span">
+              Select File
+            </mui.Button>
+          </label>
         </mui.Grid>
       </GridContainer>
     </div>

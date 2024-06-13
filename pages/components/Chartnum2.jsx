@@ -3,13 +3,13 @@ import Chart from "chart.js/auto";
 
 const LineChart = () => {
   const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
 
   useEffect(() => {
     const chartCanvas = chartRef.current.getContext("2d");
-    let chartInstance = null;
 
     const createChart = () => {
-      chartInstance = new Chart(chartCanvas, {
+      chartInstanceRef.current = new Chart(chartCanvas, {
         type: "line",
         data: {
           labels: ["2018", "2019", "2020", "2021", "2022", "2023"],
@@ -36,8 +36,8 @@ const LineChart = () => {
     createChart();
 
     return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
   }, []);

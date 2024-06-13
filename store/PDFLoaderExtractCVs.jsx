@@ -280,13 +280,13 @@ const PDFLoader = () => {
       }}
     >
       <Box style={{ border: "1px solid #ADD8E6", padding: "10px" }}>
-        <MuiFileInput value={imageUpload} onChange={handleChange} />
+        <MuiFileInput value={imageUpload} onChange={handleChange} multiple/>
         <Button
           variant="outlined"
           component="span"
           style={{ marginLeft: "10px" }}
           onClick={handleFileUpload}
-          disabled={true}
+          disabled={false}
         >
           Upload File to Firebase & Pinecone
         </Button>

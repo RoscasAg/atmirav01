@@ -3,6 +3,8 @@ import Chart from "chart.js/auto";
 
 const PieChart = ({ nifaSegur }) => {
   const chartRef = useRef(null);
+  const nifaSegurRef = useRef(nifaSegur || "Z00000300");
+  const chartInstanceRef = useRef(null);
   const [rows_pol, setRowsPol] = useState([]);
   const [acc_pol, setAccPol] = useState([]);
   const colors = [
@@ -13,18 +15,12 @@ const PieChart = ({ nifaSegur }) => {
     "#ffe9a0",
     "#6ecceb",
   ]; // Example color array
-  let chartInstance = null;
 
   useEffect(() => {
-    if (nifaSegur == null || nifaSegur == undefined) {
-      nifaSegur = "Z00000300";
-    }
-
     async function fetchData() {
       try {
-        const res = await fetch(`/api/policies?nifaSegur=${nifaSegur}`);
+        const res = await fetch(`/api/policies?nifaSegur=${nifaSegurRef.current}`);
         if (!res.ok) {
-          // res.ok checks if the HTTP status code is 200-299
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
@@ -36,8 +32,8 @@ const PieChart = ({ nifaSegur }) => {
     fetchData();
 
     return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
   }, [nifaSegur]);
@@ -58,11 +54,11 @@ const PieChart = ({ nifaSegur }) => {
     }));
     setAccPol(summaryRows);
 
-    if (chartInstance) {
-      chartInstance.destroy();
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
     }
 
-    chartInstance = new Chart(chartRef.current, {
+    chartInstanceRef.current = new Chart(chartRef.current, {
       type: "pie",
       data: {
         labels: summaryRows.map((row) => row.product),
@@ -85,8 +81,8 @@ const PieChart = ({ nifaSegur }) => {
     });
 
     return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
   }, [rows_pol]);

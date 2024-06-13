@@ -3,6 +3,8 @@ import Chart from "chart.js/auto";
 
 const BarChart = ({ nifaSegur }) => {
   const chartRef = useRef(null);
+  const nifaSegurRef = useRef(nifaSegur || "Z00000300");
+  const chartInstanceRef = useRef(null);
   const [rows_pol, setRowsPol] = useState([]);
   const [acc_pol, setAccPol] = useState([]);
   const colors = [
@@ -13,18 +15,12 @@ const BarChart = ({ nifaSegur }) => {
     "#ffe9a0",
     "#6ecceb",
   ]; // Example color array
-  let chartInstance = null;
 
   useEffect(() => {
-    if (nifaSegur == null || nifaSegur == undefined) {
-      nifaSegur = "Z00000300";
-    }
-
     async function fetchData() {
       try {
-        const res = await fetch(`/api/invoices?nifaSegur=${nifaSegur}`);
+        const res = await fetch(`/api/invoices?nifaSegur=${nifaSegurRef.current}`);
         if (!res.ok) {
-          // res.ok checks if the HTTP status code is 200-299
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const data = await res.json();
@@ -36,8 +32,8 @@ const BarChart = ({ nifaSegur }) => {
     fetchData();
 
     return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
   }, [nifaSegur]);
@@ -46,14 +42,12 @@ const BarChart = ({ nifaSegur }) => {
     const chartCanvas = chartRef.current.getContext("2d");
 
     const summary = rows_pol.reduce((acc, row) => {
-      const dateString = row.F_Emision.split(" ")[0]; // Extract the date part
-      const year = dateString.split("/")[2]; // Extract the year part
+      const dateString = row.F_Emision.split(" ")[0];
+      const year = dateString.split("/")[2];
 
-      if (!acc[year]) acc[year] = 0; // Initialize if not already done
+      if (!acc[year]) acc[year] = 0;
 
-      const impTotal = parseFloat(row.Imp_Total); // Attempt to convert Imp_Total to a number
-
-      // If impTotal is a number, accumulate it, else treat it as 0
+      const impTotal = parseFloat(row.Imp_Total);
       acc[year] += isNaN(impTotal) ? 0 : impTotal;
       return acc;
     }, {});
@@ -64,20 +58,18 @@ const BarChart = ({ nifaSegur }) => {
     }));
     setAccPol(summaryRows);
 
-    if (chartInstance) {
-      chartInstance.destroy();
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
     }
 
-    // Assuming chartRef is the reference to your canvas element and Chart is imported from 'chart.js'
-
-    chartInstance = new Chart(chartRef.current, {
-      type: "line", // specify the type as bar
+    chartInstanceRef.current = new Chart(chartRef.current, {
+      type: "line",
       data: {
-        labels: summaryRows.map((row) => row.year), // map to the 'year' property of each row in summaryRows
+        labels: summaryRows.map((row) => row.year),
         datasets: [
           {
             label: "Total by Year",
-            data: summaryRows.map((row) => row.total), // map to the 'total' property of each row in summaryRows
+            data: summaryRows.map((row) => row.total),
             backgroundColor: "#6ecceb",
             borderColor: "#6ecceb",
             borderWidth: 1,
@@ -94,8 +86,8 @@ const BarChart = ({ nifaSegur }) => {
     });
 
     return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
       }
     };
   }, [rows_pol]);

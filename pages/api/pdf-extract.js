@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import "pdf-parse";
 import { z } from "zod";
@@ -176,52 +178,61 @@ The pdfURL is {{pdfURL}} and the EmployeeId is {{EmployeeId}}.`;
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    let { pdfpath, nifparam, docname } = req.body;
+    const directoryPath = req.body.directoryPath; // La ruta de la carpeta con los PDFs
 
-    /** STEP ONE: LOAD DOCUMENT */
-    const response = await fetch(pdfpath);
-    const blob = await response.blob();
-    const loader = new PDFLoader(blob, {
-      splitPages: false,
-    });
-    const docs = await loader.load();
+    // Leer los nombres de todos los archivos en la carpeta
+    fs.readdir(directoryPath, async (err, files) => {
+      if (err) {
+        console.log('Unable to scan directory: ' + err);
+        return res.status(500).json({ message: "Unable to scan directory" });
+      }
 
-    if (docs.length === 0) {
-      console.log("No documents found.");
-      return;
-    }
+      // Filtrar para obtener solo archivos PDF
+      const pdfFiles = files.filter(file => path.extname(file).toLowerCase() === '.pdf');
 
-    //const SYSTEM_PROMPT_TEMPLATE = `${SYSTEM_PROMPT_TEMPLATE_BASE}"${pdfpath}".`;
-    // Replace the placeholders with actual values
-    const SYSTEM_PROMPT_TEMPLATE = SYSTEM_PROMPT_TEMPLATE_BASE.replace(
-      "{{pdfURL}}",
-      pdfpath,
-    ).replace("{{EmployeeId}}", docname);
+      // Procesar cada archivo PDF
+      for (const file of pdfFiles) {
+        const filePath = path.join(directoryPath, file);
+        const response = await fetch(filePath);
+        const blob = await response.blob();
+        const loader = new PDFLoader(blob, { splitPages: false });
+        const docs = await loader.load();
 
-    const prompt = ChatPromptTemplate.fromMessages([
-      ["system", SYSTEM_PROMPT_TEMPLATE],
-      ["human", "{text}"],
-    ]);
+        if (docs.length === 0) {
+          console.log("No documents found in file: " + file);
+          continue;
+        }
 
-    const llm = new ChatOpenAI({
-      modelName: process.env["OPENAI_MODEL"],
-      temperature: 0,
-    });
+        const SYSTEM_PROMPT_TEMPLATE = SYSTEM_PROMPT_TEMPLATE_BASE.replace(
+          "{{pdfURL}}",
+          filePath,
+        ).replace("{{EmployeeId}}", path.basename(file, '.pdf'));
 
-    const extractionRunnable = prompt.pipe(
-      llm.withStructuredOutput(peopleSchema, { name: "people" }),
-    );
+        const prompt = ChatPromptTemplate.fromMessages([
+          ["system", SYSTEM_PROMPT_TEMPLATE],
+          ["human", "{text}"],
+        ]);
 
-    const extract = await extractionRunnable.invoke({
-      text: docs[0].pageContent,
-    });
+        const llm = new ChatOpenAI({
+          modelName: process.env["OPENAI_MODEL"],
+          temperature: 0,
+        });
 
-    console.log(JSON.stringify(extract, null, 2));
-    console.log("Successfully extracted");
+        const extractionRunnable = prompt.pipe(
+          llm.withStructuredOutput(peopleSchema, { name: "people" }),
+        );
 
-    // Modify output as needed
-    return res.status(200).json({
-      result: `Information extracted`,
+        const extract = await extractionRunnable.invoke({
+          text: docs[0].pageContent,
+        });
+
+        console.log(JSON.stringify(extract, null, 2));
+        console.log("Successfully extracted from file: " + file);
+      }
+
+      return res.status(200).json({
+        result: `Information extracted from all PDFs`,
+      });
     });
   } else {
     res.status(405).json({ message: "Method not allowed" });

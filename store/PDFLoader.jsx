@@ -16,7 +16,6 @@ import { PictureAsPdf } from "@mui/icons-material";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
 import { v4 } from "uuid";
-import { MuiFileInput } from "mui-file-input";
 import AppNotificationContext from "../store/notification-context";
 
 // This functional component is responsible for loading PDFs
@@ -206,8 +205,8 @@ const PDFLoader = () => {
     }
   };
 
-  const handleChange = (newFile) => {
-    setImageUpload(newFile);
+  const handleChange = (event) => {
+    setImageUpload(event.target.files);
   };
 
   const handleFileUpload = async () => {
@@ -254,14 +253,20 @@ const PDFLoader = () => {
       }}
     >
       <Box style={{ border: "1px solid #ADD8E6", padding: "10px" }}>
-        <MuiFileInput value={imageUpload} onChange={handleChange} />
+        <input
+          type="file"
+          webkitdirectory="true"
+          directory="true"
+          onChange={handleChange}
+          multiple
+        />
         <Button
           variant="outlined"
           component="span"
           style={{ marginLeft: "10px" }}
           onClick={handleFileUpload}
         >
-          Upload File to Firebase & Pinecone
+          Upload Files to Firebase & Pinecone
         </Button>
         <Link
           href={selectedPdfPath}
