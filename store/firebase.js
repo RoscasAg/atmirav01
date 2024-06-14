@@ -1,4 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
+import 'firebase/compat/auth'; // Asegúrate de importar auth si usas compat
 import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
@@ -17,24 +18,24 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
+let firebaseApp;
 if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
+  firebaseApp = initializeApp(firebaseConfig);
 } else {
-  app = getApp();
+  firebaseApp = getApp();
 }
 
-export const db = getFirestore(app);
-export const db2 = getDatabase(app);
-export const storage = getStorage(app);
+export const db = getFirestore(firebaseApp); // Cambiado 'app' por 'firebaseApp'
+export const db2 = getDatabase(firebaseApp); // Cambiado 'app' por 'firebaseApp'
+export const storage = getStorage(firebaseApp); // Cambiado 'app' por 'firebaseApp'
 
 let analytics;
 if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+  analytics = getAnalytics(firebaseApp); // Cambiado 'app' por 'firebaseApp'
 }
 
 export { analytics };
 
 export const initFirebase = () => {
-  return app;
+  return firebaseApp; // Cambiado 'app' por 'firebaseApp'
 };

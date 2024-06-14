@@ -53,9 +53,6 @@ const Navbar = () => {
             <Link href="/myManuals">
               <Button style={{ color: "#fff" }}>SISnet</Button>
             </Link>
-            <Link href="/myCVs">
-              <Button style={{ color: "#fff" }}>atmira CVs</Button>
-            </Link>
             <Link href="/myExtract">
               <Button style={{ color: "#fff" }}>Extract CVs</Button>
             </Link>

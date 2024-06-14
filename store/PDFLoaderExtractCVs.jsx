@@ -1,46 +1,94 @@
-import React, { useState, useContext, useEffect } from "react";
-import ResultWithSources from "../pages/components/ResultWithSources";
-import InfoContext from "./Contextinfo";
-import PromptBox from "../pages/components/PromptBox";
-import { setGlobalSelectedPDF, globalSelectedPDF } from "./global.js";
-import { Box } from "@mui/material";
-import {
-  TextField,
-  Button,
-  Grid,
-  styled,
-  Link,
-  Typography,
-} from "@mui/material";
-import { PictureAsPdf } from "@mui/icons-material";
+import React, { useState, useContext, useEffect, useMemo, useCallback } from "react";
+import { Box, Button, Link } from "@mui/material";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
 import { v4 } from "uuid";
 import { MuiFileInput } from "mui-file-input";
 import AppNotificationContext from "../store/notification-context";
+import InfoContext from "../store/Contextinfo"; // Asegúrate de que la ruta sea correcta
+import { AgGridReact } from "@ag-grid-community/react";
+import "@ag-grid-community/styles/ag-grid.css";
+import "@ag-grid-community/styles/ag-theme-quartz.css";
+import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { ModuleRegistry } from "@ag-grid-community/core";
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
-// This functional component is responsible for loading PDFs
+// Define globalSelectedPDF if it's not already defined
+if (typeof globalSelectedPDF === 'undefined') {
+  var globalSelectedPDF = { path: "" };
+}
+
 const PDFLoader = () => {
   const [firstMsg, setFirstMsg] = useState(true);
   const { nif, updateNIF } = useContext(InfoContext);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadName, setImageUploadName] = useState(null);
   const [prompt, setPrompt] = useState();
-  const [messages, setMessages] = useState([
-    {
-      text: "Hola, soy atmira AI. En que puedo ayudarte?",
-      type: "bot",
-    },
-  ]);
   const [error, setError] = useState("");
-
-  const [selectedPdfPath, setSelectedPdfPath] = useState(
-    globalSelectedPDF.path,
-  );
-
+  const [selectedPdfPath, setSelectedPdfPath] = useState(globalSelectedPDF.path);
   const notificationCtx = useContext(AppNotificationContext);
+  const [rowData, setRowData] = useState([
+    { make: 'Tesla', model: 'Model Y', price: 64950, electric: true, month: 'June' },
+    { make: 'Ford', model: 'F-Series', price: 33850, electric: false, month: 'October' },
+    { make: 'Toyota', model: 'Corolla', price: 29600, electric: false, month: 'August' },
+    { make: 'Mercedes', model: 'EQA', price: 48890, electric: true, month: 'February' },
+    { make: 'Fiat', model: '500', price: 15774, electric: false, month: 'January' },
+    { make: 'Nissan', model: 'Juke', price: 20675, electric: false, month: 'March' },
+    { make: 'Vauxhall', model: 'Corsa', price: 18460, electric: false, month: 'July' },
+    { make: 'Volvo', model: 'EX30', price: 33795, electric: true, month: 'September' },
+    { make: 'Mercedes', model: 'Maybach', price: 175720, electric: false, month: 'December' },
+    { make: 'Vauxhall', model: 'Astra', price: 25795, electric: false, month: 'April' },
+    { make: 'Fiat', model: 'Panda', price: 13724, electric: false, month: 'November' },
+    { make: 'Jaguar', model: 'I-PACE', price: 69425, electric: true, month: 'May' },
+    { make: 'Tesla', model: 'Model Y', price: 64950, electric: true, month: 'June' },
+    { make: 'Ford', model: 'F-Series', price: 33850, electric: false, month: 'October' },
+    { make: 'Toyota', model: 'Corolla', price: 29600, electric: false, month: 'August' },
+    { make: 'Mercedes', model: 'EQA', price: 48890, electric: true, month: 'February' },
+    { make: 'Fiat', model: '500', price: 15774, electric: false, month: 'January' },
+    { make: 'Nissan', model: 'Juke', price: 20675, electric: false, month: 'March' },
+    { make: 'Vauxhall', model: 'Corsa', price: 18460, electric: false, month: 'July' },
+    { make: 'Volvo', model: 'EX30', price: 33795, electric: true, month: 'September' },
+    { make: 'Mercedes', model: 'Maybach', price: 175720, electric: false, month: 'December' },
+    { make: 'Vauxhall', model: 'Astra', price: 25795, electric: false, month: 'April' },
+    { make: 'Fiat', model: 'Panda', price: 13724, electric: false, month: 'November' },
+    { make: 'Jaguar', model: 'I-PACE', price: 69425, electric: true, month: 'May' },
+  ]);
 
-  // This function updates the prompt value when the user types in the prompt box
+  const [columnDefs, setColumnDefs] = useState([
+    {
+      field: "make",
+      checkboxSelection: true,
+      editable: true,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ["Tesla", "Ford", "Toyota", "Mercedes", "Fiat", "Nissan", "Vauxhall", "Volvo", "Jaguar"],
+      },
+    },
+    { field: "model" },
+    { field: "price", filter: 'agNumberColumnFilter' },
+    { field: "electric" },
+    {
+      field: "month",
+      comparator: (valueA, valueB) => {
+        const months = [
+          'January', 'February', 'March', 'April',
+          'May', 'June', 'July', 'August',
+          'September', 'October', 'November', 'December',
+        ];
+        const idxA = months.indexOf(valueA);
+        const idxB = months.indexOf(valueB);
+        return idxA - idxB;
+      },
+    }
+  ]);
+
+  const defaultColDef = useMemo(() => {
+    return {
+      filter: 'agTextColumnFilter',
+      floatingFilter: true,
+    }
+  }, []);
+
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
   };
@@ -66,162 +114,6 @@ const PDFLoader = () => {
     });
   };
 
-  // This function handles the submission of the user's PDF when the user hits 'Enter' or 'Submit'
-  const handleSubmitPDF = async (endpoint, fileURL) => {
-    try {
-      notificationCtx.showNotification({
-        title: "Loading...",
-        message: "Please wait while we process your request!",
-        status: "pending",
-      });
-
-      // A POST request is sent to the backend with the selected PDF file in the request body
-      const response = await fetch(`/api${endpoint}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pdfpath: fileURL,
-          nifparam: "atmiraCVs",
-          docname: imageUploadName,
-        }),
-      });
-
-      console.log(imageUpload.name);
-
-      // The response from the backend is parsed as JSON
-      const uploadRes = await response.json();
-      console.log(uploadRes);
-      setError(""); // Clear any existing error messages
-      notificationCtx.showNotification({
-        title: "Success!",
-        message: "Your request has been processed!",
-        status: "success",
-      });
-    } catch (error) {
-      setError(error.message);
-      notificationCtx.showNotification({
-        title: "Error!",
-        message: error.message,
-        status: "error",
-      });
-    }
-  };
-
-  const handleSubmitInfo = async (endpoint, fileJSON) => {
-    try {
-      notificationCtx.showNotification({
-        title: "Loading...",
-        message: "Please wait while we process your request!",
-        status: "pending",
-      });
-      const response = await fetch(`/api${endpoint}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filejson: fileJSON, nifparam: nif }),
-      });
-
-      // The response from the backend is parsed as JSON
-      const uploadRes = await response.json();
-      console.log(uploadRes);
-      setError(""); // Clear any existing error messages
-      notificationCtx.showNotification({
-        title: "Success!",
-        message: "Your request has been processed!",
-        status: "success",
-      });
-    } catch (error) {
-      console.log(error);
-      setError(error.message);
-      notificationCtx.showNotification({
-        title: "Error!",
-        message: error.message,
-        status: "error",
-      });
-    }
-  };
-
-  // This function handles the submission of the user's prompt when the user hits 'Enter' or 'Submit'
-  // It sends a POST request to the provided endpoint with the current prompt in the request body
-  const handleSubmitPrompt = async (endpoint) => {
-    try {
-      notificationCtx.showNotification({
-        title: "Loading...",
-        message: "Please wait while we process your request!",
-        status: "pending",
-      });
-
-      setPrompt("");
-
-      // Push the user's message into the messages array
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: prompt, type: "user", sourceDocuments: null },
-      ]);
-
-      // A POST request is sent to the backend with the current prompt in the request body
-      const response = await fetch(`/api${endpoint}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: prompt,
-          nifparam: "atmiraCVs",
-          firstMsg,
-        }),
-      });
-
-      // Throw an error if the HTTP status is not OK
-      if (!response.ok) {
-        notificationCtx.showNotification({
-          title: "Error!",
-          message: `HTTP error! status: ${response.status}`,
-          status: "error",
-        });
-        throw new Error();
-      }
-
-      // Parse the response from the backend as JSON
-      const searchRes = await response.json();
-
-      console.log({ searchRes });
-      setFirstMsg(false);
-      // Push the response into the messages array
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          text: searchRes.result.text,
-          //text: searchRes.result.output,
-          type: "bot",
-          sourceDocuments: searchRes.result.sourceDocuments,
-        },
-      ]);
-      notificationCtx.showNotification({
-        title: "Success!",
-        message: "Your request has been processed!",
-        status: "success",
-      });
-      setError(""); // Clear any existing error messages
-    } catch (error) {
-      console.log(error);
-      setError(error.message);
-      notificationCtx.showNotification({
-        title: "Error!",
-        message: error.message,
-        status: "error",
-      });
-    }
-  };
-
-  const handleChange = (newFile) => {
-    setImageUpload(newFile);
-    setImageUploadName(newFile.name);
-  };
-
   const handleFileUpload = async () => {
     try {
       notificationCtx.showNotification({
@@ -232,7 +124,7 @@ const PDFLoader = () => {
       const url = await uploadFiletoFirebase();
       handleSubmitPDF("/pdf-upload", url);
     } catch (error) {
-      // catch error
+      console.error("Error during file upload:", error);
     }
   };
 
@@ -246,81 +138,45 @@ const PDFLoader = () => {
       const url = await uploadFiletoFirebase();
       handleSubmitPDF("/pdf-extract", url);
     } catch (error) {
-      // catch error
+      console.error("Error during info extraction:", error);
     }
   };
 
-  const handleInfoUpload = async () => {
-    try {
-      const res = await fetch(`/api/policies?nifaSegur=${nif}`);
-      if (!res.ok) {
-        // res.ok checks if the HTTP status code is 200-299
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const data = await res.json();
-      console.log(data);
-
-      // Move the handleSubmitInfo function call inside the try block
-      handleSubmitInfo("policies-upload", data);
-    } catch (error) {
-      console.error("A problem occurred when fetching the data:", error);
-    }
-  };
-
-  // The component returns a two column layout with various child components
   return (
-    <Box
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: "16px",
-        boxShadow: "0px 0px 1px rgba(0, 0, 0, 0.5)",
-        backgroundColor: "#fff",
-        borderRadius: "2px",
-      }}
-    >
+    <Box style={{ display: "flex", flexDirection: "column", padding: "16px", boxShadow: "0px 0px 1px rgba(0, 0, 0, 0.5)", backgroundColor: "#fff", borderRadius: "2px" }}>
       <Box style={{ border: "1px solid #ADD8E6", padding: "10px" }}>
-        <MuiFileInput value={imageUpload} onChange={handleChange} multiple/>
-        <Button
-          variant="outlined"
-          component="span"
-          style={{ marginLeft: "10px" }}
-          onClick={handleFileUpload}
-          disabled={false}
-        >
+        <MuiFileInput
+          value={imageUpload}
+          onChange={(e) => {
+            if (e.target && e.target.files && e.target.files.length > 0) {
+              setImageUpload(e.target.files[0]);
+            } else {
+              console.error("No files selected or file input is not properly initialized.");
+            }
+          }}
+          multiple
+        />
+        <Button variant="outlined" component="span" style={{ marginLeft: "10px" }} onClick={handleFileUpload} disabled={!imageUpload}>
           Upload File to Firebase & Pinecone
         </Button>
-        <Button
-          variant="outlined"
-          component="span"
-          style={{ marginLeft: "10px" }}
-          onClick={handleInfoExtraction}
-        >
+        <Button variant="outlined" component="span" style={{ marginLeft: "10px" }} onClick={handleInfoExtraction}>
           Extract Information
         </Button>
-        <Link
-          href={selectedPdfPath}
-          target="_blank"
-          rel="noreferrer"
-          underline="none"
-          style={{ marginLeft: "16px" }}
-        >
-          <PictureAsPdf sx={{ color: "secondary" }} />
-          <Typography
-            variant="body1"
-            component="span"
-            color="secondary"
-          ></Typography>
+        <Link href={selectedPdfPath} target="_blank" rel="noreferrer" underline="none">
+          {selectedPdfPath}
         </Link>
       </Box>
-      <ResultWithSources messages={messages} pngFile="pdf" />
-      <PromptBox
-        prompt={prompt}
-        handlePromptChange={handlePromptChange}
-        handleSubmit={() => handleSubmitPrompt("/pdf-query")}
-        placeHolderText="Ask something about your documents?"
-        error={error}
-      />
+      <Box className="ag-theme-quartz" style={{ height: 500 }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={defaultColDef}
+          rowSelection="multiple"
+          suppressRowClickSelection={true}
+          pagination={true}
+          paginationPageSize={10}
+        />
+      </Box>
     </Box>
   );
 };

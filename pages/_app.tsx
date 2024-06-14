@@ -10,6 +10,7 @@ import { CopilotSidebar, CopilotPopup } from "@copilotkit/react-ui";
 import Navbar from "./Navbar";
 import InfoContext from "../store/Contextinfo";
 import { useState, useEffect, useContext } from "react";
+import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { nif } = useContext(InfoContext); // Retrieve NIF from context

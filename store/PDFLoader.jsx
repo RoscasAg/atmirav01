@@ -285,11 +285,11 @@ const PDFLoader = () => {
       </Box>
       <ResultWithSources messages={messages} pngFile="pdf" />
       <PromptBox
-        prompt={prompt}
-        handlePromptChange={handlePromptChange}
-        handleSubmit={() => handleSubmitPrompt("/pdf-query")}
-        placeHolderText="Ask something about your documents?"
-        error={error}
+        // prompt={prompt}
+        // handlePromptChange={handlePromptChange}
+        // handleSubmit={() => handleSubmitPrompt("/pdf-query")}
+        // placeHolderText="Ask something about your documents?"
+        // error={error}
       />
     </Box>
   );

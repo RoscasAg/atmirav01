@@ -5,11 +5,12 @@ import { useRouter } from "next/router";
 import InfoContext from "../store/Contextinfo";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
-import firebase from "firebase/compat/app";
+import { firebaseApp } from "../store/firebase"; // Importa la instancia de Firebase
 import "firebase/compat/auth";
 import dynamic from "next/dynamic";
 import { getDatabase, ref, get, onValue } from "firebase/database";
 import { db2 } from "../store/firebase";
+import { GoogleAuthProvider, EmailAuthProvider, PhoneAuthProvider } from "firebase/auth";
 const StyledFirebaseAuth = dynamic(
   () => import("../store/StyledFirebaseAuth"),
   {
@@ -26,9 +27,9 @@ const GridContainer = styled(mui.Grid)(({ theme }) => ({
 const uiConfig = {
   signInFlow: "popup",
   signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+    GoogleAuthProvider.PROVIDER_ID,
+    EmailAuthProvider.PROVIDER_ID,
+    PhoneAuthProvider.PROVIDER_ID,
   ],
   callbacks: {
     // Avoid redirects after sign-in.
@@ -53,17 +54,15 @@ function SignInScreen() {
 
   useEffect(() => {
     if (!firebaseApp) {
-      initializeFirebase();
-      updateFirebaseAppState(true);
+      console.error("Firebase app is not initialized");
+      return;
     }
-
-    const unregisterAuthObserver = firebase
-      .auth()
-      .onAuthStateChanged((user) => {
-        setIsSignedIn(!!user);
-      });
-    return unregisterAuthObserver;
-  }, [firebaseApp, initializeFirebase, updateFirebaseAppState]);
+  
+    const unregisterAuthObserver = firebaseApp.auth().onAuthStateChanged((user) => {
+      setIsSignedIn(!!user);
+    });
+    return () => unregisterAuthObserver();
+  }, [firebaseApp]);
 
   if (!firebaseApp) return null;
 
