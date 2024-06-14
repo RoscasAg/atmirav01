@@ -2,7 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/myExtract": "pages/myExtract.js",
-  "/myManuals": "pages/myManuals.js",
-  "/myGraph": "pages/myGraph.js"
+  "/myExtract": "pages/myExtract.js"
 }

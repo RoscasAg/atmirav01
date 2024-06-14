@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as mui from "@mui/material";
 import { useState, useEffect, useContext } from "react";
 import IconButton from "@mui/material/IconButton";
 import { styled } from "@mui/material/styles";
@@ -10,6 +9,7 @@ import Loading from "./components/Loading";
 import PDFLoaderv2 from "../store/PDFLoaderExtractCVs";
 import AppNotificationContext from "../store/notification-context";
 import InfoContext from "../store/Contextinfo";
+import * as mui from "@mui/material"; // Define el alias mui correctamente
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -43,7 +43,7 @@ const GridPDFLoader = styled(mui.Grid)(({ theme }) => ({
   },
 }));
 
-function MyDocuments({ }) {
+function MyDocuments() {
   const router = useRouter();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -71,15 +71,15 @@ function MyDocuments({ }) {
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
   useEffect(() => {
-    if (error != "" || (documents.length === 0 && !loading)) {
+    if (error !== "" || (documents.length === 0 && !loading)) {
       notificationCtx.showNotification({
         title: "Error!",
         message: "There is no Information for that Customer!",

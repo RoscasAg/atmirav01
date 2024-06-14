@@ -89,6 +89,8 @@ const PDFLoader = () => {
     }
   }, []);
 
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
   };
@@ -142,6 +144,25 @@ const PDFLoader = () => {
     }
   };
 
+  const handleCreate = () => {
+    // Lógica para crear un nuevo elemento
+    console.log("Crear elemento");
+  };
+
+  const handleUpdate = () => {
+    // Lógica para actualizar un elemento existente
+    console.log("Modificar elemento");
+  };
+
+  const handleDelete = () => {
+    // Lógica para eliminar un elemento
+    console.log("Eliminar elemento");
+  };
+
+  const onSelectionChanged = (event) => {
+    setSelectedRows(event.api.getSelectedRows());
+  };
+
   return (
     <Box style={{ display: "flex", flexDirection: "column", padding: "16px", boxShadow: "0px 0px 1px rgba(0, 0, 0, 0.5)", backgroundColor: "#fff", borderRadius: "2px" }}>
       <Box style={{ border: "1px solid #ADD8E6", padding: "10px" }}>
@@ -175,7 +196,53 @@ const PDFLoader = () => {
           suppressRowClickSelection={true}
           pagination={true}
           paginationPageSize={10}
+          onSelectionChanged={onSelectionChanged}
         />
+      </Box>
+      <Box style={{ marginTop: "20px" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreate}
+          sx={{
+            backgroundColor: 'primary.main',
+            color: 'white',
+          }}
+        >
+          Crear
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleUpdate}
+          style={{ marginLeft: "10px" }}
+          disabled={selectedRows.length === 0}
+          sx={{
+            backgroundColor: selectedRows.length > 0 ? 'secondary.main' : 'grey.500',
+            color: selectedRows.length > 0 ? 'white' : 'black',
+            '&:hover': {
+              backgroundColor: selectedRows.length > 0 ? 'secondary.dark' : 'grey.500',
+            },
+          }}
+        >
+          Modificar
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleDelete}
+          style={{ marginLeft: "10px" }}
+          disabled={selectedRows.length === 0}
+          sx={{
+            backgroundColor: selectedRows.length > 0 ? 'error.main' : 'grey.500',
+            color: selectedRows.length > 0 ? 'white' : 'black',
+            '&:hover': {
+              backgroundColor: selectedRows.length > 0 ? 'error.dark' : 'grey.500',
+            },
+          }}
+        >
+          Eliminar
+        </Button>
       </Box>
     </Box>
   );
